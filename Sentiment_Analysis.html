@@ -1,0 +1,581 @@
+<!-- ... existing code ... -->
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SentimentPulse - Advanced NLP Sentiment & Emotion Analyzer</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="h-full bg-slate-900 text-slate-100 font-sans antialiased flex flex-col">
+
+    <header class="bg-slate-800 border-b border-slate-700 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-gradient-to-tr from-emerald-500 to-teal-400 p-2.5 rounded-xl shadow-lg shadow-emerald-500/20">
+                    <i class="fa-solid fa-brain text-white text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">SentimentPulse AI</h1>
+                    <p class="text-xs text-slate-400">Advanced NLP & Public Opinion Insights</p>
+                </div>
+            </div>
+            <nav class="hidden md:flex space-x-1">
+                <button onclick="switchTab('analyzer')" id="nav-analyzer" class="px-4 py-2 rounded-lg text-sm font-medium bg-emerald-600 text-white transition-all shadow-sm">
+                    <i class="fa-solid fa-wand-magic-sparkles mr-2"></i>Live Analyzer
+                </button>
+                <button onclick="switchTab('sources')" id="nav-sources" class="px-4 py-2 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-700 transition-all">
+                    <i class="fa-solid fa-database mr-2"></i>Multi-Source Feed
+                </button>
+                <button onclick="switchTab('trends')" id="nav-trends" class="px-4 py-2 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-700 transition-all">
+                    <i class="fa-solid fa-chart-line mr-2"></i>Trends & Insights
+                </button>
+                <button onclick="switchTab('business')" id="nav-business" class="px-4 py-2 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-700 transition-all">
+                    <i class="fa-solid fa-briefcase mr-2"></i>Action Hub
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full space-y-6">
+
+        <!-- TAB 1: LIVE ANALYZER -->
+        <section id="tab-analyzer" class="space-y-6">
+            <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-xl">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-wand-magic-sparkles text-emerald-400"></i> Advanced NLP Sentiment & Emotion Lexicon Engine
+                        </h2>
+                        <p class="text-sm text-slate-400">Rule 1 & 2: Real-time text classification and lexicon-based emotion mapping.</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="loadSample('amazon')" class="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 rounded-lg text-xs font-medium text-slate-200 transition">Amazon Review</button>
+                        <button onclick="loadSample('social')" class="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 rounded-lg text-xs font-medium text-slate-200 transition">Social Media</button>
+                        <button onclick="loadSample('news')" class="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 rounded-lg text-xs font-medium text-slate-200 transition">News Feed</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 space-y-4">
+                        <textarea id="textInput" rows="5" oninput="updateCharCount()" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 placeholder-slate-500 resize-none text-sm" placeholder="Enter text to analyze sentiment & emotions using NLP lexicons..."></textarea>
+                        <div class="flex justify-between items-center">
+                            <span id="charCount" class="text-xs text-slate-500">0 characters</span>
+                            <button onclick="runAnalysis()" class="px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-semibold rounded-xl shadow-lg shadow-emerald-500/25 transition-all transform active:scale-95 flex items-center gap-2">
+                                <i class="fa-solid fa-brain"></i> Run NLP Lexicon Analysis
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Quick Summary Box -->
+                    <div id="quickResultCard" class="bg-slate-900/80 border border-slate-700/80 rounded-xl p-5 flex flex-col justify-between hidden">
+                        <div>
+                            <span class="text-xs uppercase tracking-wider text-slate-400 font-semibold">Classification (Rule 1)</span>
+                            <div id="resultSentiment" class="text-2xl font-black mt-1 mb-3">Positive</div>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-slate-400">Polarity Index:</span>
+                                    <span id="resultPolarity" class="font-mono text-emerald-400">+0.68</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-400">Model Confidence:</span>
+                                    <span id="resultConfidence" class="font-mono text-white">94.2%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-slate-800">
+                            <span class="text-xs text-slate-400 block mb-1">Lexicon Emotion (Rule 2):</span>
+                            <span id="resultEmotion" class="inline-block px-3 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full text-xs font-bold">Joy / Excitement</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Breakdown Metrics (Rule 2 Spotlight) -->
+            <div id="detailedResults" class="grid grid-cols-1 md:grid-cols-2 gap-6 hidden">
+                <!-- Emotion Vector Breakdown -->
+                <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-xl">
+                    <h3 class="text-base font-bold text-white mb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-face-smile text-emerald-400"></i> Specific Emotion Detection (Rule 2)
+                    </h3>
+                    <p class="text-xs text-slate-400 mb-4">Lexicon mapping across core NRC emotion vectors (Joy, Anger, Surprise, Sadness, Fear, Disgust).</p>
+                    <div id="emotionBars" class="space-y-3">
+                        <!-- Bars injected via JS -->
+                    </div>
+                </div>
+
+                <!-- Lexicon Keyword Highlights -->
+                <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-xl flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-base font-bold text-white mb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-highlighter text-amber-400"></i> NLP Lexicon Keyword Parser
+                        </h3>
+                        <p class="text-xs text-slate-400 mb-4">Identified root words matched against valence dictionaries:</p>
+                        <div id="lexiconTags" class="flex flex-wrap gap-2">
+                            <!-- Tags injected via JS -->
+                        </div>
+                    </div>
+                    <div class="mt-4 p-3 bg-slate-900 rounded-xl border border-slate-700 text-xs text-slate-400">
+                        <i class="fa-solid fa-circle-info text-emerald-400 mr-1"></i> NLP Parser evaluates token frequency against weighted sentiment lexicons.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: MULTI-SOURCE FEED -->
+        <section id="tab-sources" class="space-y-6 hidden">
+            <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-xl">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-globe text-teal-400"></i> Rule 3: Multi-Source Data Ingestion
+                        </h2>
+                        <p class="text-sm text-slate-400">Real-time simulated streaming and batch analysis across Amazon, Social Media, and News sites.</p>
+                    </div>
+                    <div class="flex items-center gap-2 bg-slate-900 p-1.5 rounded-xl border border-slate-700">
+                        <button onclick="filterSource('all')" class="source-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 text-white transition">All Sources</button>
+                        <button onclick="filterSource('Amazon')" class="source-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:text-white transition">Amazon</button>
+                        <button onclick="filterSource('Twitter')" class="source-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:text-white transition">Social Media</button>
+                        <button onclick="filterSource('News')" class="source-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:text-white transition">News</button>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-slate-700 text-xs text-slate-400 uppercase tracking-wider">
+                                <th class="p-3">Source</th>
+                                <th class="p-3">Content Snippet</th>
+                                <th class="p-3">Sentiment</th>
+                                <th class="p-3">Dominant Emotion</th>
+                                <th class="p-3">Polarity</th>
+                                <th class="p-3">Timestamp</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sourceTableBody" class="divide-y divide-slate-700 text-sm">
+                            <!-- Rows injected via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: TRENDS & OPINION -->
+        <section id="tab-trends" class="space-y-6 hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Trend Chart -->
+                <div class="lg:col-span-2 bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-xl flex flex-col justify-between">
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2 mb-1">
+                            <i class="fa-solid fa-chart-line text-emerald-400"></i> Rule 4: Public Opinion & Sentiment Trends
+                        </h2>
+                        <p class="text-sm text-slate-400 mb-6">Tracking sentiment polarity fluctuation over the past 7 days across monitored channels.</p>
+                    </div>
+                    <div class="h-72 w-full relative">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Sentiment Proportion Pie -->
+                <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-xl flex flex-col justify-between">
+                    <div>
+                        <h2 class="text-lg font-bold text-white mb-1">Global Ratio</h2>
+                        <p class="text-xs text-slate-400 mb-4">Overall positive/neutral/negative balance.</p>
+                    </div>
+                    <div class="h-56 w-full relative flex items-center justify-center">
+                        <canvas id="ratioChart"></canvas>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 mt-4 text-center text-xs">
+                        <div class="bg-slate-900 p-2 rounded-lg border border-slate-700">
+                            <span class="text-emerald-400 font-bold block text-sm" id="posRatioPct">62%</span>
+                            <span class="text-slate-400">Positive</span>
+                        </div>
+                        <div class="bg-slate-900 p-2 rounded-lg border border-slate-700">
+                            <span class="text-amber-400 font-bold block text-sm" id="neuRatioPct">23%</span>
+                            <span class="text-slate-400">Neutral</span>
+                        </div>
+                        <div class="bg-slate-900 p-2 rounded-lg border border-slate-700">
+                            <span class="text-rose-400 font-bold block text-sm" id="negRatioPct">15%</span>
+                            <span class="text-slate-400">Negative</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: ACTION HUB -->
+        <section id="tab-business" class="space-y-6 hidden">
+            <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-xl">
+                <h2 class="text-xl font-bold text-white flex items-center gap-2 mb-1">
+                    <i class="fa-solid fa-briefcase text-emerald-400"></i> Rule 5: Strategic Business Insights & Recommendations
+                </h2>
+                <p class="text-sm text-slate-400 mb-6">Derived from automated sentiment clustering to inform marketing campaigns, product improvements, and public relations.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Card 1 -->
+                    <div class="bg-slate-900 border border-slate-700 rounded-xl p-5 flex flex-col justify-between space-y-4">
+                        <div>
+                            <div class="w-10 h-10 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-bold mb-3">
+                                <i class="fa-solid fa-bullhorn text-lg"></i>
+                            </div>
+                            <h3 class="font-bold text-white mb-2">Marketing & Campaigns</h3>
+                            <p class="text-xs text-slate-400 leading-relaxed">Customers are expressing high excitement regarding durability features. Amplify user-generated testimonial clips emphasizing long battery performance on Instagram and TikTok.</p>
+                        </div>
+                        <div class="pt-3 border-t border-slate-800 flex justify-between items-center text-xs">
+                            <span class="text-emerald-400 font-semibold">Priority: High</span>
+                            <button onclick="triggerAction('marketing')" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition">Deploy Strategy</button>
+                        </div>
+                    </div>
+
+                    <!-- Card 2 -->
+                    <div class="bg-slate-900 border border-slate-700 rounded-xl p-5 flex flex-col justify-between space-y-4">
+                        <div>
+                            <div class="w-10 h-10 rounded-lg bg-teal-500/10 text-teal-400 flex items-center justify-center font-bold mb-3">
+                                <i class="fa-solid fa-gears text-lg"></i>
+                            </div>
+                            <h3 class="font-bold text-white mb-2">Product Development</h3>
+                            <p class="text-xs text-slate-400 leading-relaxed">Negative sentiment clustering reveals persistent friction points around shipping delays and packaging waste. Prioritize eco-friendly boxes and expedited logistics partners.</p>
+                        </div>
+                        <div class="pt-3 border-t border-slate-800 flex justify-between items-center text-xs">
+                            <span class="text-amber-400 font-semibold">Priority: Urgent</span>
+                            <button onclick="triggerAction('product')" class="px-3 py-1 bg-teal-600 hover:bg-teal-500 text-white rounded-lg transition">Create Ticket</button>
+                        </div>
+                    </div>
+
+                    <!-- Card 3 -->
+                    <div class="bg-slate-900 border border-slate-700 rounded-xl p-5 flex flex-col justify-between space-y-4">
+                        <div>
+                            <div class="w-10 h-10 rounded-lg bg-indigo-500/10 text-indigo-400 flex items-center justify-center font-bold mb-3">
+                                <i class="fa-solid fa-comments text-lg"></i>
+                            </div>
+                            <h3 class="font-bold text-white mb-2">Social Insights & PR</h3>
+                            <p class="text-xs text-slate-400 leading-relaxed">Overall brand sentiment spiked 14% following the recent software update patch. Schedule a community appreciation Q&A session to maintain positive momentum.</p>
+                        </div>
+                        <div class="pt-3 border-t border-slate-800 flex justify-between items-center text-xs">
+                            <span class="text-indigo-400 font-semibold">Priority: Medium</span>
+                            <button onclick="triggerAction('pr')" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg transition">Schedule Event</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Notification Modal Box -->
+    <div id="notificationModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 max-w-sm w-full mx-4 shadow-2xl space-y-4 text-center">
+            <div id="modalIcon" class="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 mx-auto flex items-center justify-center text-xl">
+                <i class="fa-solid fa-check"></i>
+            </div>
+            <h3 id="modalTitle" class="text-lg font-bold text-white">Action Executed</h3>
+            <p id="modalDesc" class="text-xs text-slate-400">Strategy successfully dispatched to relevant department.</p>
+            <button onclick="closeModal()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl text-sm transition">Got it</button>
+        </div>
+    </div>
+
+    <script>
+        // Sample datasets simulating Rule 3 (Amazon, Social Media, News)
+        const mockFeedData = [
+            { source: 'Amazon', text: 'Absolute game changer! The battery lasts forever and charging is blazing fast.', sentiment: 'Positive', emotion: 'Joy', polarity: 0.85, time: '10 mins ago' },
+            { source: 'Twitter', text: 'Why is customer support taking 3 days to respond to my refund request?? Unbelievable.', sentiment: 'Negative', emotion: 'Anger', polarity: -0.72, time: '18 mins ago' },
+            { source: 'News', text: 'Tech giant announces breakthrough in renewable energy integration for upcoming device lines.', sentiment: 'Neutral', emotion: 'Surprise', polarity: 0.12, time: '45 mins ago' },
+            { source: 'Amazon', text: 'Decent build quality, but the screen scratches way too easily. Expected better for the price.', sentiment: 'Neutral', emotion: 'Disgust', polarity: -0.15, time: '1 hour ago' },
+            { source: 'Twitter', text: 'Loving the sleek new interface design! Everything feels so smooth and snappy ✨', sentiment: 'Positive', emotion: 'Joy', polarity: 0.78, time: '2 hours ago' },
+            { source: 'News', text: 'Supply chain disruptions continue to threaten quarterly electronic component deliveries worldwide.', sentiment: 'Negative', emotion: 'Fear', polarity: -0.55, time: '3 hours ago' },
+            { source: 'Amazon', text: 'Terrible packaging! The box arrived completely crushed and open. Returning immediately.', sentiment: 'Negative', emotion: 'Anger', polarity: -0.88, time: '4 hours ago' },
+            { source: 'Twitter', text: 'Just tried the new camera features in low light and my mind is blown. Wow.', sentiment: 'Positive', emotion: 'Surprise', polarity: 0.91, time: '5 hours ago' }
+        ];
+
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            ['analyzer', 'sources', 'trends', 'business'].forEach(id => {
+                document.getElementById(`tab-${id}`).classList.add('hidden');
+                document.getElementById(`nav-${id}`).classList.remove('bg-emerald-600', 'text-white', 'shadow-sm');
+                document.getElementById(`nav-${id}`).classList.add('text-slate-300', 'hover:bg-slate-700');
+            });
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            const activeNav = document.getElementById(`nav-${tabId}`);
+            activeNav.classList.remove('text-slate-300', 'hover:bg-slate-700');
+            activeNav.classList.add('bg-emerald-600', 'text-white', 'shadow-sm');
+
+            if (tabId === 'trends' && !window.trendChartInstance) {
+                initCharts();
+            }
+        }
+
+        // Sample loader dictionary
+        const samples = {
+            amazon: "I am absolutely thrilled with the battery life and build quality, though the shipping fee was a bit high.",
+            social: "This app update is an absolute disaster! It keeps crashing every two minutes. Fix this immediately!",
+            news: "Markets reacted cautiously today following reports of fluctuating inflation metrics across global tech sectors."
+        };
+
+        function loadSample(type) {
+            const input = document.getElementById('textInput');
+            if (samples[type]) {
+                input.value = samples[type];
+                updateCharCount();
+                runAnalysis();
+            }
+        }
+
+        function updateCharCount() {
+            const text = document.getElementById('textInput').value;
+            document.getElementById('charCount').innerText = text.length + ' characters';
+        }
+
+        // Rule 1 & 2: NLP Classification & Emotion Lexicon Engine
+        function runAnalysis() {
+            const text = document.getElementById('textInput').value.trim();
+            if (!text) return;
+
+            // Comprehensive NLP Lexicons & Emotion Mapping (Rule 2)
+            const lexiconDictionary = {
+                joy: ['thrilled', 'love', 'amazing', 'great', 'game changer', 'fast', 'smooth', 'blazing', 'wonderful', 'excellent', 'fantastic', 'wow', 'happy', 'sleek'],
+                anger: ['terrible', 'disaster', 'crashing', 'awful', 'bad', 'refund', 'unbelievable', 'crushed', 'disappointed', 'worst', 'hate', 'delay', 'angry', 'fix'],
+                surprise: ['breakthrough', 'unexpected', 'shocked', 'sudden', 'mind blown'],
+                sadness: ['unfortunately', 'sad', 'poor', 'useless', 'regret'],
+                fear: ['threaten', 'risk', 'danger', 'warning', 'cautious'],
+                disgust: ['scratches', 'waste', 'mess', 'gross']
+            };
+            
+            let posScore = 0;
+            let negScore = 0;
+            const lowerText = text.toLowerCase();
+            const matchedLexicon = [];
+            let detectedEmotionScores = { Joy: 10, Anger: 10, Surprise: 10, Sadness: 10, Fear: 10, Disgust: 10 };
+
+            // Scan text against lexicon categories
+            for (const [emotion, words] of Object.entries(lexiconDictionary)) {
+                words.forEach(w => {
+                    if (lowerText.includes(w)) {
+                        matchedLexicon.push({ word: w, category: emotion });
+                        if (['joy', 'surprise'].includes(emotion)) {
+                            posScore += 2;
+                            detectedEmotionScores[emotion.charAt(0).toUpperCase() + emotion.slice(1)] += 45;
+                        } else {
+                            negScore += 2;
+                            detectedEmotionScores[emotion.charAt(0).toUpperCase() + emotion.slice(1)] += 50;
+                        }
+                    }
+                });
+            }
+
+            let sentiment = 'Neutral';
+            let polarity = 0.02;
+            let dominantEmotion = 'Anticipation';
+            let confidence = 81.2;
+
+            if (posScore > negScore) {
+                sentiment = 'Positive';
+                polarity = +(0.35 + (posScore * 0.15)).toFixed(2);
+                if (polarity > 0.95) polarity = 0.95;
+                dominantEmotion = 'Joy';
+                confidence = 93.4;
+            } else if (negScore > posScore) {
+                sentiment = 'Negative';
+                polarity = -(0.35 + (negScore * 0.15)).toFixed(2);
+                if (polarity < -0.95) polarity = -0.95;
+                dominantEmotion = negScore > 3 ? 'Anger' : 'Disgust';
+                confidence = 89.8;
+            }
+
+            // Normalize emotion scores for UI percentage bars
+            const totalScore = Object.values(detectedEmotionScores).reduce((a, b) => a + b, 0);
+            const emotionPercentages = {};
+            for (const [emo, val] of Object.entries(detectedEmotionScores)) {
+                emotionPercentages[emo] = Math.min(95, Math.max(5, Math.round((val / totalScore) * 180)));
+            }
+            if (sentiment === 'Positive') emotionPercentages['Joy'] = 88;
+            if (sentiment === 'Negative') emotionPercentages['Anger'] = 82;
+
+            // Render Results
+            document.getElementById('quickResultCard').classList.remove('hidden');
+            document.getElementById('detailedResults').classList.remove('hidden');
+
+            const sentElem = document.getElementById('resultSentiment');
+            sentElem.innerText = sentiment;
+            sentElem.className = `text-2xl font-black mt-1 mb-3 ${sentiment === 'Positive' ? 'text-emerald-400' : sentiment === 'Negative' ? 'text-rose-400' : 'text-amber-400'}`;
+
+            document.getElementById('resultPolarity').innerText = (polarity > 0 ? '+' : '') + polarity;
+            document.getElementById('resultConfidence').innerText = confidence + '%';
+            document.getElementById('resultEmotion').innerText = dominantEmotion;
+
+            // Render Specific Emotion Detection Bars (Rule 2 implementation)
+            const emotionColors = { Joy: 'bg-emerald-500', Anger: 'bg-rose-500', Surprise: 'bg-teal-500', Sadness: 'bg-indigo-500', Fear: 'bg-amber-500', Disgust: 'bg-orange-500' };
+            let barsHtml = '';
+            for (const [emo, pct] of Object.entries(emotionPercentages)) {
+                barsHtml += `
+                    <div>
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="text-slate-300 font-medium">${emo}</span>
+                            <span class="text-slate-400 font-mono">${pct}%</span>
+                        </div>
+                        <div class="w-full bg-slate-900 rounded-full h-2 overflow-hidden border border-slate-700">
+                            <div class="${emotionColors[emo] || 'bg-emerald-500'} h-full rounded-full transition-all duration-500" style="width: ${pct}%"></div>
+                        </div>
+                    </div>
+                `;
+            }
+            document.getElementById('emotionBars').innerHTML = barsHtml;
+
+            // Render Lexicon Tags
+            let tagsHtml = '';
+            if (matchedLexicon.length > 0) {
+                matchedLexicon.forEach(m => {
+                    tagsHtml += `<span class="px-2.5 py-1 rounded-lg text-xs font-mono font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">${m.word} [${m.category}]</span>`;
+                });
+            } else {
+                tagsHtml = `<span class="text-xs text-slate-500 italic">No specific lexicon keywords triggered. General neutral valence applied.</span>`;
+            }
+            document.getElementById('lexiconTags').innerHTML = tagsHtml;
+        }
+
+        // Rule 3: Populate Multi-Source Feed Table
+        function renderSourceTable(filter = 'all') {
+            const tbody = document.getElementById('sourceTableBody');
+            let html = '';
+            
+            const filtered = filter === 'all' ? mockFeedData : mockFeedData.filter(d => d.source === (filter === 'Twitter' ? 'Twitter' : filter));
+
+            filtered.forEach(item => {
+                const badgeColor = item.sentiment === 'Positive' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : item.sentiment === 'Negative' ? 'bg-rose-500/10 text-rose-400 border-rose-500/20' : 'bg-amber-500/10 text-amber-400 border-amber-500/20';
+                const sourceBadge = item.source === 'Amazon' ? 'bg-orange-500/10 text-orange-400 border-orange-500/20' : item.source === 'Twitter' ? 'bg-sky-500/10 text-sky-400 border-sky-500/20' : 'bg-purple-500/10 text-purple-400 border-purple-500/20';
+
+                html += `
+                    <tr class="hover:bg-slate-750 transition-colors">
+                        <td class="p-3"><span class="px-2.5 py-1 rounded-md text-xs font-semibold border ${sourceBadge}">${item.source}</span></td>
+                        <td class="p-3 text-slate-300 max-w-md truncate">${item.text}</td>
+                        <td class="p-3"><span class="px-2.5 py-1 rounded-full text-xs font-bold border ${badgeColor}">${item.sentiment}</span></td>
+                        <td class="p-3 text-slate-400 font-medium text-xs">${item.emotion}</td>
+                        <td class="p-3 font-mono text-xs ${item.polarity > 0 ? 'text-emerald-400' : 'text-rose-400'}">${item.polarity > 0 ? '+' : ''}${item.polarity}</td>
+                        <td class="p-3 text-slate-500 text-xs">${item.time}</td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        function filterSource(source) {
+            document.querySelectorAll('.source-filter-btn').forEach(btn => {
+                btn.classList.remove('bg-emerald-600', 'text-white');
+                btn.classList.add('text-slate-300');
+            });
+            event.target.classList.remove('text-slate-300');
+            event.target.classList.add('bg-emerald-600', 'text-white');
+            renderSourceTable(source);
+        }
+
+        // Rule 4 & Chart Initializations
+        function initCharts() {
+            // Line Trend Chart
+            const ctxTrend = document.getElementById('trendChart').getContext('2d');
+            window.trendChartInstance = new Chart(ctxTrend, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [
+                        {
+                            label: 'Amazon Sentiment Index',
+                            data: [0.42, 0.55, 0.48, 0.65, 0.72, 0.68, 0.75],
+                            borderColor: '#22c55e',
+                            backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                            fill: true,
+                            tension: 0.3
+                        },
+                        {
+                            label: 'Social Media Index',
+                            data: [0.15, -0.10, 0.22, 0.05, 0.35, 0.40, 0.38],
+                            borderColor: '#38bdf8',
+                            backgroundColor: 'transparent',
+                            tension: 0.3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#94a3b8', font: { family: 'Inter' } } } },
+                    scales: {
+                        x: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
+                        y: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' }, min: -0.5, max: 1.0 }
+                    }
+                }
+            });
+
+            // Ratio Doughnut Chart
+            const ctxRatio = document.getElementById('ratioChart').getContext('2d');
+            new Chart(ctxRatio, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Positive', 'Neutral', 'Negative'],
+                    datasets: [{
+                        data: [62, 23, 15],
+                        backgroundColor: ['#22c55e', '#fbbf24', '#f43f5e'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    cutout: '75%'
+                }
+            });
+        }
+
+        // Rule 5: Action Hub triggers
+        function triggerAction(type) {
+            const modal = document.getElementById('notificationModal');
+            const title = document.getElementById('modalTitle');
+            const desc = document.getElementById('modalDesc');
+
+            if (type === 'marketing') {
+                title.innerText = "Marketing Campaign Deployed";
+                desc.innerText = "High-performing customer testimonials regarding durability have been routed to the ad creative team for Instagram & TikTok rollout.";
+            } else if (type === 'product') {
+                title.innerText = "Jira Ticket Created";
+                desc.innerText = "Product engineering and logistics teams have been notified regarding packaging waste and shipping friction spikes.";
+            } else {
+                title.innerText = "PR Event Scheduled";
+                desc.innerText = "Community appreciation Q&A session has been queued on official Twitter/X channels to capitalize on positive sentiment momentum.";
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('notificationModal').classList.add('hidden');
+        }
+
+        // Initialize table on load
+        window.onload = function() {
+            renderSourceTable('all');
+        };
+    </script>
+</body>
+</html>
