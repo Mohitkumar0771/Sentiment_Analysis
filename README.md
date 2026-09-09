@@ -75,5 +75,3 @@ NLP Engine: Custom Token Frequency & Valence Lexicon Dictionary in JavaScript
 📝 License
 
 Distributed under the MIT License. See LICENSE for more information.
-
-Made with ❤️ for Advanced NLP and Public Opinion Analytics.
